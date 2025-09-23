@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: DockerFile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - ENV=development
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: DockerFile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - ENV=development
+  database:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=youruser
+      - POSTGRES_PASSWORD=yourpassword
+      - POSTGRES_DB=yourdb
+    volumes:
+      - db_data:/var/lib/postgresql/data 
