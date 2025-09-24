@@ -1,13 +1,21 @@
 cwd := $(shell pwd)
 
-docker-build-backend:
-	docker build -t my-backend-service backend/.
+build-frontend:
+	docker build -t frontend-image -f frontend/DockerFile frontend
 
-docker-build-frontend:
-	docker build -t my-frontend-service frontend/.
+build-backend:
+	docker build -t backend-image -f backend/DockerFile backend
 
-docker-run-backend:
-	docker run -d -p 3000:3000 --name backend-container my-backend-service
+run-backend:
+	docker run -d -p 5000:5000 --name backend-container backend-image
 
-docker-run-frontend:
-	docker run -d -p 8080:80 --name frontend-container my-frontend-service
+run-frontend:
+	docker run -d -p 8080:80 --name frontend-container frontend-image
+
+clean:
+	docker rm -f backend-container frontend-container || true
+	docker rmi -f backend-image frontend-image || true
+
+build: build-backend build-frontend
+
+run: run-backend run-frontend

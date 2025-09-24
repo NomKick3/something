@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend Service</title>
+</head>
+<body>
+    <h1>Welcome to the Frontend Service</h1>
+    <p>This is a simple frontend service.</p>
+    <div id="timer"></div>
+    <script>
+    function fetchTimer() {
+    fetch('http://localhost:5000/api/info')
+        .then(response => response.json())
+        .then(data => {
+        document.getElementById('timer').textContent = "Timer: " + data.timer + " seconds";
+        });
+    }
+
+    // Fetch timer every 3 seconds
+    setInterval(fetchTimer, 3000);
+
+    // Optionally, fetch once immediately on page load
+    fetchTimer();
+    </script>   
+</body>
+</html>
