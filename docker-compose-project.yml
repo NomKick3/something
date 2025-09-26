@@ -5,7 +5,7 @@ services:
       context: ./backend
       dockerfile: DockerFile
     ports:
-      - "3000:3000"
+      - "5000:5000"
     volumes:
       - ./backend:/app
     environment:
@@ -20,13 +20,3 @@ services:
       - ./frontend:/app
     environment:
       - ENV=development
-  database:
-    image: postgres:13
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=youruser
-      - POSTGRES_PASSWORD=yourpassword
-      - POSTGRES_DB=yourdb
-    volumes:
-      - db_data:/var/lib/postgresql/data 

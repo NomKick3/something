@@ -1,0 +1,74 @@
+# Backend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: nomkick/backend-image:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: ENV
+          value: "development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  clusterIP: 10.96.0.101
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+# Frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: nomkick/frontend-image:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENV
+          value: "development"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort

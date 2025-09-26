@@ -9,7 +9,7 @@
     <div id="timer"></div>
     <script>
     function fetchTimer() {
-    fetch('http://localhost:5000/api/info')
+    fetch('http://10.96.0.101:5000/api/info')
         .then(response => response.json())
         .then(data => {
         document.getElementById('timer').textContent = "Timer: " + data.timer + " seconds";
