@@ -1,3 +1,33 @@
+# ConfigMap for initializing the database with quotes
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quotes-init-script
+data:
+  quotes.sql: |
+    CREATE TABLE quotes (
+      id SERIAL PRIMARY KEY,
+      text TEXT NOT NULL,
+      author TEXT
+    );
+    INSERT INTO quotes (text, author) VALUES
+      ('The only limit to our realization of tomorrow is our doubts of today.', 'Franklin D. Roosevelt'),
+      ('Do or do not. There is no try.', 'Yoda'),
+      ('To be or not to be, that is the question.', 'William Shakespeare');
+
+# PersistentVolumeClaim for postgres data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
 # Backend
 ---
 apiVersion: apps/v1
@@ -35,6 +65,8 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
+      nodePort: 30050
+  type: NodePort
 # Frontend
 ---
 apiVersion: apps/v1
@@ -73,3 +105,51 @@ spec:
       targetPort: 80
       nodePort: 30080
   type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        env:
+        - name: POSTGRES_PASSWORD
+          value: examplepassword
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: quotes-init
+          mountPath: /docker-entrypoint-initdb.d/quotes.sql
+          subPath: quotes.sql
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: quotes-init
+        configMap:
+          name: quotes-init-script
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

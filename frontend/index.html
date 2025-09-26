@@ -7,19 +7,30 @@
     <h1>Welcome to the Frontend Service</h1>
     <p>This is a simple frontend service.</p>
     <div id="timer"></div>
+    <div id="quote"></div>
     <script>
     function fetchTimer() {
-    fetch('http://10.96.0.101:5000/api/info')
+    fetch('http://localhost:30050/api/info')
         .then(response => response.json())
         .then(data => {
         document.getElementById('timer').textContent = "Timer: " + data.timer + " seconds";
         });
     }
 
+    function fetchQuote() {
+    fetch('http://localhost:30050/api/quote')
+        .then(response => response.json())
+        .then(data => {
+        document.getElementById('quote').textContent = "Quote: " + data.quote;
+        });
+    }
+    // Fetch quote every 10 seconds
+    setInterval(fetchQuote, 10000);
     // Fetch timer every 3 seconds
     setInterval(fetchTimer, 3000);
 
     // Optionally, fetch once immediately on page load
+    fetchQuote();
     fetchTimer();
     </script>   
 </body>
